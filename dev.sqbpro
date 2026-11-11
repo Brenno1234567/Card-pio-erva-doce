@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="dev.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="2996"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="configuracoes" custom_title="0" dock_id="1" table="4,13:mainconfiguracoes"/><dock_state state="000000ff00000000fd00000001000000020000000000000000fc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000012400ffffff000000000000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1*">-- Inserção completa de produtos do cardápio[cite: 19]
+
+-- 1. Salgados[cite: 19]
+INSERT INTO produtos (id, nome, descricao, preco, categoria, status, canal_visibilidade) VALUES 
+('salg-01', 'Coxinha', 'Salgado frito', 7.50, 'Salgados', 'Ativo', 'ambos'),
+('salg-02', 'Kibe', 'Salgado frito', 7.50, 'Salgados', 'Ativo', 'ambos'),
+('salg-03', 'Risoles (Presunto e Queijo)', 'Salgado frito', 7.50, 'Salgados', 'Ativo', 'ambos'),
+('salg-04', 'Croquete de carne', 'Salgado frito', 7.50, 'Salgados', 'Ativo', 'ambos'),
+('salg-05', 'Bolinho de carne', 'Salgado frito', 8.50, 'Salgados', 'Ativo', 'ambos'),
+('salg-06', 'Empada (Frango e Palmito)', 'Salgado assado', 7.50, 'Salgados', 'Ativo', 'ambos'),
+('salg-07', 'Enrolado de Presunto e Queijo', 'Salgado assado', 7.50, 'Salgados', 'Ativo', 'ambos'),
+('salg-08', 'Pastelão de Palmito com Catupiry', 'Salgado assado', 7.50, 'Salgados', 'Ativo', 'ambos'),
+('salg-09', 'Enrolado de Salsicha com Presunto e Queijo', 'Salgado assado', 7.50, 'Salgados', 'Ativo', 'ambos'),
+('salg-10', 'Calabresa com Catupiry', 'Salgado assado', 7.50, 'Salgados', 'Ativo', 'ambos'),
+('salg-11', 'Frango com Catupiry', 'Salgado assado', 7.50, 'Salgados', 'Ativo', 'ambos'),
+('salg-12', 'Torta de Frango', 'Fatia de torta', 12.00, 'Salgados', 'Ativo', 'ambos'),
+('salg-13', 'Torta de Calabresa', 'Fatia de torta', 12.00, 'Salgados', 'Ativo', 'ambos'),
+('salg-14', 'Esfirra de Carne', 'Esfirra assada', 7.50, 'Salgados', 'Ativo', 'ambos'),
+('salg-15', 'Hambúrguer com Presunto e Queijo', 'Lanche assado', 10.00, 'Salgados', 'Ativo', 'ambos'),
+('salg-16', 'Hambúrguer com Presunto, Queijo e bacon', 'Lanche assado', 10.00, 'Salgados', 'Ativo', 'ambos'),
+('salg-17', 'Hambúrguer com Presunto, Queijo, bacon e cheddar', 'Lanche assado', 10.00, 'Salgados', 'Ativo', 'ambos');
+
+-- 2. Lanches Quentes[cite: 19]
+INSERT INTO produtos (id, nome, descricao, preco, categoria, status, canal_visibilidade) VALUES 
+('lq-01', 'Misto Quente', 'Pão francês, presunto e mussarela', 14.00, 'Lanches Quentes', 'Ativo', 'ambos'),
+('lq-02', 'Bauru', 'Pão francês, presunto, mussarela e tomate', 16.00, 'Lanches Quentes', 'Ativo', 'ambos'),
+('lq-03', 'Americano de Presunto', 'Pão francês, presunto, mussarela, ovo, tomate e alface', 20.00, 'Lanches Quentes', 'Ativo', 'ambos'),
+('lq-04', 'Queijo Quente', 'Pão francês e mussarela na chapa', 14.00, 'Lanches Quentes', 'Ativo', 'ambos'),
+('lq-05', 'Cheese Salada Burger', 'Hamburger, presunto, mussarela, tomate e alface', 22.00, 'Lanches Quentes', 'Ativo', 'ambos'),
+('lq-06', 'Cheese Vegetariano', 'Pão francês, mussarela, ovo, tomate e alface', 20.00, 'Lanches Quentes', 'Ativo', 'ambos'),
+('lq-07', 'Cheese Egg Burger', 'Hamburger, presunto, mussarela, bacon, tomate e alface', 28.00, 'Lanches Quentes', 'Ativo', 'ambos'),
+('lq-08', 'Cheese Bacon Burger', 'Hamburger, presunto, mussarela, bacon, tomate e alface', 28.00, 'Lanches Quentes', 'Ativo', 'ambos'),
+('lq-09', 'Cheese Calabresa Burger', 'Hamburger, mussarela, calabresa, tomate e alface', 25.00, 'Lanches Quentes', 'Ativo', 'ambos'),
+('lq-10', 'Cheese Tudo Burger', 'Hamburger, bacon, calabresa, presunto, ovo, mussarela, tomate e alface', 30.00, 'Lanches Quentes', 'Ativo', 'ambos'),
+('lq-11', 'Cheese Caipira', 'Pão Francês, Linguiça, Vinagrete e Mussarela', 25.00, 'Lanches Quentes', 'Ativo', 'ambos');
+
+-- 3. Lanches Frios[cite: 19]
+INSERT INTO produtos (id, nome, descricao, preco, categoria, status, canal_visibilidade) VALUES 
+('lf-01', 'Lanche Natural de Presunto', 'Baguete, presunto, queijo, alface, tomate e azeite', 12.00, 'Lanches Frios', 'Ativo', 'ambos'),
+('lf-02', 'Lanche Natural de Peito de Peru', 'Baguete, peito de peru, mussarela, alface, tomate e azeite', 14.00, 'Lanches Frios', 'Ativo', 'ambos'),
+('lf-03', 'Lanche Natural de Salame', 'Baguete, salame, mussarela, alface, tomate e azeite', 15.00, 'Lanches Frios', 'Ativo', 'ambos'),
+('lf-04', 'Lanche Natural de Frango', 'Baguete, patê de frango, mussarela, alface, tomate e azeite', 14.00, 'Lanches Frios', 'Ativo', 'ambos');
+
+-- 4. Cervejas[cite: 19]
+INSERT INTO produtos (id, nome, descricao, preco, categoria, status, canal_visibilidade) VALUES 
+('cerv-01', 'Heineken 330ML', 'Garrafa', 0.00, 'Cervejas', 'Ativo', 'ambos'),
+('cerv-02', 'Amstel 350ML', 'Lata', 0.00, 'Cervejas', 'Ativo', 'ambos');
+
+-- 5. Empadão (por Kg)[cite: 19]
+INSERT INTO produtos (id, nome, descricao, preco, categoria, status, canal_visibilidade, tipo_variacao, opcoes_variacao) VALUES 
+('emp-01', 'Calabresa com Muçarela', 'Empadão por kg', 45.00, 'Empadão (por Kg)', 'Ativo', 'ambos', 'peso', '{&quot;unidadePadrao&quot;:&quot;kg&quot;,&quot;quantidadeMinima&quot;:100}'),
+('emp-02', 'Frango com Muçarela', 'Empadão por kg', 45.00, 'Empadão (por Kg)', 'Ativo', 'ambos', 'peso', '{&quot;unidadePadrao&quot;:&quot;kg&quot;,&quot;quantidadeMinima&quot;:100}'),
+('emp-03', 'Frango com Palmito e Muçarela', 'Empadão por kg', 45.00, 'Empadão (por Kg)', 'Ativo', 'ambos', 'peso', '{&quot;unidadePadrao&quot;:&quot;kg&quot;,&quot;quantidadeMinima&quot;:100}'),
+('emp-04', 'Palmito', 'Empadão por kg', 45.00, 'Empadão (por Kg)', 'Ativo', 'ambos', 'peso', '{&quot;unidadePadrao&quot;:&quot;kg&quot;,&quot;quantidadeMinima&quot;:100}');
+
+-- 6. Sucos[cite: 19]
+INSERT INTO produtos (id, nome, descricao, preco, categoria, status, canal_visibilidade) VALUES 
+('suc-01', 'Laranja (Fruta)', 'Suco natural', 14.00, 'Sucos', 'Ativo', 'ambos'),
+('suc-02', 'Laranja e acerola (Fruta/polpa)', 'Suco misto', 16.00, 'Sucos', 'Ativo', 'ambos'),
+('suc-03', 'Laranja e morango (Fruta)', 'Suco misto', 18.00, 'Sucos', 'Ativo', 'ambos'),
+('suc-04', 'Abacaxi com água (Fruta)', 'Suco natural', 14.00, 'Sucos', 'Ativo', 'ambos'),
+('suc-05', 'Abacaxi com Hortelã (Fruta)', 'Suco natural', 14.50, 'Sucos', 'Ativo', 'ambos'),
+('suc-06', 'Morango com... (Fruta)', 'Suco natural', 16.00, 'Sucos', 'Ativo', 'ambos'),
+('suc-07', 'Morango com leite (Fruta)', 'Suco com leite', 18.00, 'Sucos', 'Ativo', 'ambos'),
+('suc-08', 'Maracujá com polpa', 'Suco de polpa', 14.00, 'Sucos', 'Ativo', 'ambos'),
+('suc-09', 'Maracujá com polpa e leite', 'Suco com leite', 16.00, 'Sucos', 'Ativo', 'ambos'),
+('suc-10', 'Opção com polpa', 'Suco de polpa', 14.00, 'Sucos', 'Ativo', 'ambos'),
+('suc-11', 'Opção com polpa', 'Suco de polpa', 14.00, 'Sucos', 'Ativo', 'ambos'),
+('suc-12', 'Limão (polpa)', 'Suco de polpa', 14.00, 'Sucos', 'Ativo', 'ambos'),
+('suc-13', 'Limonada Italiana', 'Água com gás, xarope e gelo', 12.00, 'Sucos', 'Ativo', 'ambos');
+
+-- 7. Bolo Salgado[cite: 19]
+INSERT INTO produtos (id, nome, descricao, preco, categoria, status, canal_visibilidade) VALUES 
+('bs-01', 'Frango com Muçarela', 'Bolo salgado', 45.00, 'Bolo Salgado', 'Ativo', 'ambos'),
+('bs-02', 'Frango com palmito e Muçarela', 'Bolo salgado', 45.00, 'Bolo Salgado', 'Ativo', 'ambos'),
+('bs-03', 'Atum c/ muçarela', 'Bolo salgado', 70.00, 'Bolo Salgado', 'Ativo', 'ambos');
+
+-- 8. Baguetes[cite: 19]
+INSERT INTO produtos (id, nome, descricao, preco, categoria, status, canal_visibilidade) VALUES 
+('bag-01', 'Baguete de Presunto e Queijo', 'Baguete, presunto, queijo, alface, tomate e azeite', 65.00, 'Baguetes', 'Ativo', 'ambos'),
+('bag-02', 'Baguete de Peito de Peru', 'Baguete, peito de peru, mussarela, alface, tomate e azeite', 65.00, 'Baguetes', 'Ativo', 'ambos'),
+('bag-03', 'Baguete de Salame', 'Baguete, salame, mussarela, alface, tomate e azeite', 65.00, 'Baguetes', 'Ativo', 'ambos'),
+('bag-04', 'Baguete de Frango', 'Baguete, patê de frango, mussarela, alface, tomate e azeite', 65.00, 'Baguetes', 'Ativo', 'ambos'),
+('bag-05', 'Baguete de Tomate Seco', 'Baguete, mussarela ou queijo branco, rúcula, alface, tomate e azeite', 65.00, 'Baguetes', 'Ativo', 'ambos');
+
+-- 9. Pães[cite: 19]
+INSERT INTO produtos (id, nome, descricao, preco, categoria, status, canal_visibilidade, tipo_variacao, opcoes_variacao) VALUES 
+('pao-01', 'Pão Francês com manteiga', 'Pão com manteiga', 4.50, 'Pães', 'Ativo', 'ambos', NULL, NULL),
+('pao-02', 'Pão Francês com manteiga na chapa', 'Pão na chapa', 5.50, 'Pães', 'Ativo', 'ambos', NULL, NULL),
+('pao-03', 'Pão Francês com margarina', 'Pão com margarina', 4.00, 'Pães', 'Ativo', 'ambos', NULL, NULL),
+('pao-04', 'Pão Francês com margarina na chapa', 'Pão na chapa', 5.00, 'Pães', 'Ativo', 'ambos', NULL, NULL),
+('pao-05', 'Pão Francês com requeijão na chapa', 'Pão na chapa', 8.00, 'Pães', 'Ativo', 'ambos', NULL, NULL),
+('pao-06', 'Pão Casquinha', 'Pão Francês com requeijão e mussarela na chapa', 12.00, 'Pães', 'Ativo', 'ambos', NULL, NULL),
+('pao-07', 'Pão Francês - Kg', 'Vendido por quilo', 15.00, 'Pães', 'Ativo', 'ambos', 'peso', '{&quot;unidadePadrao&quot;:&quot;kg&quot;,&quot;quantidadeMinima&quot;:50}'),
+('pao-08', 'Baguete - Kg', 'Vendido por quilo', 22.00, 'Pães', 'Ativo', 'ambos', 'peso', '{&quot;unidadePadrao&quot;:&quot;kg&quot;,&quot;quantidadeMinima&quot;:100}'),
+('pao-09', 'Pão Doril - Kg', 'Vendido por quilo', 22.00, 'Pães', 'Ativo', 'ambos', 'peso', '{&quot;unidadePadrao&quot;:&quot;kg&quot;,&quot;quantidadeMinima&quot;:100}');
+
+-- 10. Pães de Queijo[cite: 19]
+INSERT INTO produtos (id, nome, descricao, preco, categoria, status, canal_visibilidade) VALUES 
+('pq-01', 'Presunto e muçarela', 'Pão de queijo recheado', 12.00, 'Pães de Queijo', 'Ativo', 'ambos'),
+('pq-02', 'Peito de peru com muçarela ou queijo branco', 'Pão de queijo recheado', 14.00, 'Pães de Queijo', 'Ativo', 'ambos'),
+('pq-03', 'Frango com muçarela', 'Pão de queijo recheado', 14.00, 'Pães de Queijo', 'Ativo', 'ambos'),
+('pq-04', 'Frango com requeijão', 'Pão de queijo recheado', 14.00, 'Pães de Queijo', 'Ativo', 'ambos'),
+('pq-05', 'Frango com bacon e muçarela', 'Pão de queijo recheado', 15.00, 'Pães de Queijo', 'Ativo', 'ambos'),
+('pq-06', 'Muçarela com requeijão', 'Pão de queijo recheado', 12.00, 'Pães de Queijo', 'Ativo', 'ambos'),
+('pq-07', 'Casquinha', 'requeijão e mussarela na chapa', 13.00, 'Pães de Queijo', 'Ativo', 'ambos');
+
+-- 11. Bebidas Geladas[cite: 19]
+INSERT INTO produtos (id, nome, descricao, preco, categoria, status, canal_visibilidade, tipo_variacao, opcoes_variacao, adicionais) VALUES 
+('bg-01', 'Chocolate gelado copo', 'Bebida gelada', 15.00, 'Bebidas Geladas', 'Ativo', 'ambos', 'tamanho', '[{&quot;opcao&quot;:&quot;P&quot;,&quot;preco&quot;:15},{&quot;opcao&quot;:&quot;G&quot;,&quot;preco&quot;:18}]', '[{&quot;nome&quot;:&quot;Caramelo salgado&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Leite moça&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Alpino&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Nutella&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Ovomaltine&quot;,&quot;preco&quot;:3}]'),
+('bg-02', 'Cappuccino gelado', 'Bebida gelada', 15.00, 'Bebidas Geladas', 'Ativo', 'ambos', 'tamanho', '[{&quot;opcao&quot;:&quot;P&quot;,&quot;preco&quot;:15},{&quot;opcao&quot;:&quot;G&quot;,&quot;preco&quot;:18}]', '[{&quot;nome&quot;:&quot;Caramelo salgado&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Leite moça&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Alpino&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Nutella&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Ovomaltine&quot;,&quot;preco&quot;:3}]'),
+('bg-03', 'Café Affogato', '1 Expresso com um bolo de sorvete', 14.00, 'Bebidas Geladas', 'Ativo', 'ambos', NULL, NULL, '[{&quot;nome&quot;:&quot;Caramelo salgado&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Leite moça&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Alpino&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Nutella&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Ovomaltine&quot;,&quot;preco&quot;:3}]'),
+('bg-04', 'Milk Shake de Chocolate', 'Milk shake', 18.00, 'Bebidas Geladas', 'Ativo', 'ambos', NULL, NULL, '[{&quot;nome&quot;:&quot;Caramelo salgado&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Leite moça&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Alpino&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Nutella&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Ovomaltine&quot;,&quot;preco&quot;:3}]'),
+('bg-05', 'Milk Shake de Morango', 'Milk shake', 18.00, 'Bebidas Geladas', 'Ativo', 'ambos', NULL, NULL, '[{&quot;nome&quot;:&quot;Caramelo salgado&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Leite moça&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Alpino&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Nutella&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Ovomaltine&quot;,&quot;preco&quot;:3}]'),
+('bg-06', 'Milk Shake de Rafaelo', 'Milk shake', 20.00, 'Bebidas Geladas', 'Ativo', 'ambos', NULL, NULL, '[{&quot;nome&quot;:&quot;Caramelo salgado&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Leite moça&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Alpino&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Nutella&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Ovomaltine&quot;,&quot;preco&quot;:3}]'),
+('bg-07', 'Milk Shake de Ovomaltine', 'Milk shake', 20.00, 'Bebidas Geladas', 'Ativo', 'ambos', NULL, NULL, '[{&quot;nome&quot;:&quot;Caramelo salgado&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Leite moça&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Alpino&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Nutella&quot;,&quot;preco&quot;:3},{&quot;nome&quot;:&quot;Ovomaltine&quot;,&quot;preco&quot;:3}]');
+
+-- 12. Bebidas Quentes[cite: 19]
+INSERT INTO produtos (id, nome, descricao, preco, categoria, status, canal_visibilidade, tipo_variacao, opcoes_variacao, adicionais) VALUES 
+('bq-01', 'Café coado (com açúcar)', 'Café quente', 2.00, 'Bebidas Quentes', 'Ativo', 'ambos', 'tamanho', '[{&quot;opcao&quot;:&quot;P&quot;,&quot;preco&quot;:2},{&quot;opcao&quot;:&quot;M&quot;,&quot;preco&quot;:4}]', '[{&quot;nome&quot;:&quot;Canela&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Chantilly&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Gotas de chocolate&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Calda de caramelo&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Leite condensado&quot;,&quot;preco&quot;:2}]'),
+('bq-02', 'Café com leite', 'Café com leite', 2.50, 'Bebidas Quentes', 'Ativo', 'ambos', 'tamanho', '[{&quot;opcao&quot;:&quot;P&quot;,&quot;preco&quot;:2.5},{&quot;opcao&quot;:&quot;M&quot;,&quot;preco&quot;:5}]', '[{&quot;nome&quot;:&quot;Canela&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Chantilly&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Gotas de chocolate&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Calda de caramelo&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Leite condensado&quot;,&quot;preco&quot;:2}]'),
+('bq-03', 'Café expresso com leite', 'Expresso com leite', 5.50, 'Bebidas Quentes', 'Ativo', 'ambos', 'tamanho', '[{&quot;opcao&quot;:&quot;P&quot;,&quot;preco&quot;:5.5},{&quot;opcao&quot;:&quot;M&quot;,&quot;preco&quot;:7}]', '[{&quot;nome&quot;:&quot;Canela&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Chantilly&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Gotas de chocolate&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Calda de caramelo&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Leite condensado&quot;,&quot;preco&quot;:2}]'),
+('bq-04', 'Café expresso (sem açúcar)', 'Café expresso puro', 4.50, 'Bebidas Quentes', 'Ativo', 'ambos', NULL, NULL, '[{&quot;nome&quot;:&quot;Canela&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Chantilly&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Gotas de chocolate&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Calda de caramelo&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Leite condensado&quot;,&quot;preco&quot;:2}]'),
+('bq-05', 'Chocolate quente xícara', 'Chocolate quente', 10.00, 'Bebidas Quentes', 'Ativo', 'ambos', NULL, NULL, '[{&quot;nome&quot;:&quot;Canela&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Chantilly&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Gotas de chocolate&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Calda de caramelo&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Leite condensado&quot;,&quot;preco&quot;:2}]'),
+('bq-06', 'Cappuccino (da casa)', 'Cappuccino exclusivo', 10.00, 'Bebidas Quentes', 'Ativo', 'ambos', NULL, NULL, '[{&quot;nome&quot;:&quot;Canela&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Chantilly&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Gotas de chocolate&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Calda de caramelo&quot;,&quot;preco&quot;:2},{&quot;nome&quot;:&quot;Leite condensado&quot;,&quot;preco&quot;:2}]');
+
+-- 13. Salgadinhos (Cento)[cite: 19]
+INSERT INTO produtos (id, nome, descricao, preco, categoria, status, canal_visibilidade) VALUES 
+('cent-01', 'Coxinha', 'Salgadinho de festa', 95.00, 'Salgadinhos (Cento)', 'Ativo', 'ambos'),
+('cent-02', 'Risólis', 'Salgadinho de festa', 95.00, 'Salgadinhos (Cento)', 'Ativo', 'ambos'),
+('cent-03', 'Bolinha de Queijo', 'Salgadinho de festa', 95.00, 'Salgadinhos (Cento)', 'Ativo', 'ambos'),
+('cent-04', 'Esfirrinha de Carne', 'Salgadinho de festa', 95.00, 'Salgadinhos (Cento)', 'Ativo', 'ambos'),
+('cent-05', 'Esfirrinha de Frango', 'Salgadinho de festa', 95.00, 'Salgadinhos (Cento)', 'Ativo', 'ambos'),
+('cent-06', 'Esfirrinha de Calabresa', 'Salgadinho de festa', 95.00, 'Salgadinhos (Cento)', 'Ativo', 'ambos'),
+('cent-07', 'Salsichinha', 'Salgadinho de festa', 95.00, 'Salgadinhos (Cento)', 'Ativo', 'ambos'),
+('cent-08', 'Enroladinho de Presunto e Queijo', 'Salgadinho de festa', 95.00, 'Salgadinhos (Cento)', 'Ativo', 'ambos'),
+('cent-09', 'Empadinhas de Frango', 'Salgadinho de festa', 105.00, 'Salgadinhos (Cento)', 'Ativo', 'ambos'),
+('cent-10', 'Empadinhas de Palmito', 'Salgadinho de festa', 105.00, 'Salgadinhos (Cento)', 'Ativo', 'ambos'),
+('cent-11', 'Empadinhas de Calabresa com Requeijão', 'Salgadinho de festa', 105.00, 'Salgadinhos (Cento)', 'Ativo', 'ambos'),
+('cent-12', 'Mini Cachorro Quente', 'Salgadinho de festa', 105.00, 'Salgadinhos (Cento)', 'Ativo', 'ambos'),
+('cent-13', 'Mini Quiches', 'Salgadinho de festa', 105.00, 'Salgadinhos (Cento)', 'Ativo', 'ambos'),
+('cent-14', 'Quiches', 'Salgadinho de festa', 105.00, 'Salgadinhos (Cento)', 'Ativo', 'ambos'),
+('cent-15', 'Kibe', 'Salgadinho de festa', 95.00, 'Salgadinhos (Cento)', 'Ativo', 'ambos'),
+('cent-16', 'Pão de Batata com Patê', 'Salgadinho de festa', 159.00, 'Salgadinhos (Cento)', 'Ativo', 'ambos');
+
+-- 14. Tortas Doces (por Kg)[cite: 19]
+INSERT INTO produtos (id, nome, descricao, preco, categoria, status, canal_visibilidade, tipo_variacao, opcoes_variacao) VALUES 
+('td-01', 'Sabor Limão', 'Torta doce por kg', 80.00, 'Tortas Doces (por Kg)', 'Ativo', 'ambos', 'peso', '{&quot;unidadePadrao&quot;:&quot;kg&quot;,&quot;quantidadeMinima&quot;:100}'),
+('td-02', 'Sabor Morango', 'Torta doce por kg', 80.00, 'Tortas Doces (por Kg)', 'Ativo', 'ambos', 'peso', '{&quot;unidadePadrao&quot;:&quot;kg&quot;,&quot;quantidadeMinima&quot;:100}'),
+('td-03', 'Pudim Leite Condensado', 'Pudim por kg', 45.00, 'Tortas Doces (por Kg)', 'Ativo', 'ambos', 'peso', '{&quot;unidadePadrao&quot;:&quot;kg&quot;,&quot;quantidadeMinima&quot;:100}');
+
+-- 15. Docinhos[cite: 19]
+INSERT INTO produtos (id, nome, descricao, preco, categoria, status, canal_visibilidade, tipo_variacao, opcoes_variacao) VALUES 
+('doc-01', 'Brigadeiro', 'Docinho', 110.00, 'Docinhos', 'Ativo', 'ambos', NULL, NULL),
+('doc-02', 'Bicho de Pé', 'Docinho', 110.00, 'Docinhos', 'Ativo', 'ambos', NULL, NULL),
+('doc-03', 'Beijinho', 'Docinho', 110.00, 'Docinhos', 'Ativo', 'ambos', NULL, NULL),
+('doc-04', 'Casadinho', 'Docinho', 110.00, 'Docinhos', 'Ativo', 'ambos', NULL, NULL),
+('doc-05', 'Churros', 'Docinho', 110.00, 'Docinhos', 'Ativo', 'ambos', NULL, NULL),
+('doc-06', 'Bombom de Morango', 'Docinho', 110.00, 'Docinhos', 'Ativo', 'ambos', NULL, NULL),
+('doc-07', 'Mini Bombons', 'Vendido por kg', 80.00, 'Docinhos', 'Ativo', 'ambos', 'peso', '{&quot;unidadePadrao&quot;:&quot;kg&quot;,&quot;quantidadeMinima&quot;:100}');
+
+-- 16. Bolos - Massa Branca[cite: 19]
+INSERT INTO produtos (id, nome, descricao, preco, categoria, status, canal_visibilidade) VALUES 
+('mb-01', 'Ninho com doce de leite cozido', 'Bolo massa branca', 70.00, 'Bolos - Massa Branca', 'Ativo', 'ambos'),
+('mb-02', 'Lua de mel e Ninho com cerejas', 'Bolo massa branca', 72.00, 'Bolos - Massa Branca', 'Ativo', 'ambos'),
+('mb-03', 'Ninho com sonho de valsa e brigadeiro', 'Bolo massa branca', 74.00, 'Bolos - Massa Branca', 'Ativo', 'ambos'),
+('mb-04', 'Ninho com ouro branco e lua de mel', 'Bolo massa branca', 74.00, 'Bolos - Massa Branca', 'Ativo', 'ambos'),
+('mb-05', 'Creme de Abacaxi e Leite Ninho', 'Bolo massa branca', 70.00, 'Bolos - Massa Branca', 'Ativo', 'ambos'),
+('mb-06', 'Creme de Abacaxi e Doce de Leite cozido', 'Bolo massa branca', 70.00, 'Bolos - Massa Branca', 'Ativo', 'ambos'),
+('mb-07', 'Creme de Abacaxi e recheio de coco', 'Bolo massa branca', 70.00, 'Bolos - Massa Branca', 'Ativo', 'ambos'),
+('mb-08', 'Creme com ameixas e Doce de Leite cozido', 'Bolo massa branca', 72.00, 'Bolos - Massa Branca', 'Ativo', 'ambos'),
+('mb-09', 'Creme com pêssegos e Leite condensado cozido', 'Bolo massa branca', 70.00, 'Bolos - Massa Branca', 'Ativo', 'ambos'),
+('mb-10', 'Doce de Leite cozido com ameixas, prestígio e cobertura de Marshmallow', 'Bolo massa branca', 72.00, 'Bolos - Massa Branca', 'Ativo', 'ambos'),
+('mb-11', 'Lua de Mel com Morangos e Leite Ninho', 'Bolo massa branca', 72.00, 'Bolos - Massa Branca', 'Ativo', 'ambos'),
+('mb-12', 'Creme com morangos e Nozes', 'Bolo massa branca', 74.00, 'Bolos - Massa Branca', 'Ativo', 'ambos'),
+('mb-13', 'Creme com Amendoim e Leite Condensado cozido', 'Bolo massa branca', 70.00, 'Bolos - Massa Branca', 'Ativo', 'ambos');
+
+-- 17. Bolos - Massa Chocolate[cite: 19]
+INSERT INTO produtos (id, nome, descricao, preco, categoria, status, canal_visibilidade) VALUES 
+('mc-01', 'Alpino', 'Bolo massa chocolate', 74.00, 'Bolos - Massa Chocolate', 'Ativo', 'ambos'),
+('mc-02', 'Doce de Leite cozido', 'Bolo massa chocolate', 70.00, 'Bolos - Massa Chocolate', 'Ativo', 'ambos'),
+('mc-03', 'Capuccino e Brigadeiro', 'Bolo massa chocolate', 70.00, 'Bolos - Massa Chocolate', 'Ativo', 'ambos'),
+('mc-04', 'Alpino e mousse de Chocolate Picado', 'Bolo massa chocolate', 74.00, 'Bolos - Massa Chocolate', 'Ativo', 'ambos'),
+('mc-05', 'Brigadeiro e Leite Ninho', 'Bolo massa chocolate', 70.00, 'Bolos - Massa Chocolate', 'Ativo', 'ambos'),
+('mc-06', 'Brigadeiro, Leite Ninho com Cerejas', 'Bolo massa chocolate', 72.00, 'Bolos - Massa Chocolate', 'Ativo', 'ambos'),
+('mc-07', 'Brigadeiro e Prestígio', 'Bolo massa chocolate', 70.00, 'Bolos - Massa Chocolate', 'Ativo', 'ambos'),
+('mc-08', 'Brigadeiro, Lua de Mel com Morangos', 'Bolo massa chocolate', 72.00, 'Bolos - Massa Chocolate', 'Ativo', 'ambos'),
+('mc-09', 'Lua de Mel com Morangos e Leite Ninho', 'Bolo massa chocolate', 72.00, 'Bolos - Massa Chocolate', 'Ativo', 'ambos'),
+('mc-10', 'Brigadeiro e Mousse de Maracujá', 'Bolo massa chocolate', 74.00, 'Bolos - Massa Chocolate', 'Ativo', 'ambos'),
+('mc-11', 'Brigadeiro, Mousse de Chocolate trufado com chocolate picado', 'Bolo massa chocolate', 74.00, 'Bolos - Massa Chocolate', 'Ativo', 'ambos'),
+('mc-12', 'Chocolate trufado preto e trufado branco', 'Bolo massa chocolate', 74.00, 'Bolos - Massa Chocolate', 'Ativo', 'ambos'),
+('mc-13', 'Chocolate Alpino e Leite Ninho', 'Bolo massa chocolate', 74.00, 'Bolos - Massa Chocolate', 'Ativo', 'ambos'),
+('mc-14', 'Chocolate Kit Kat', 'Bolo massa chocolate', 72.00, 'Bolos - Massa Chocolate', 'Ativo', 'ambos');</sql><current_tab id="0"/></tab_sql></sqlb_project>

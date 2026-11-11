@@ -1,0 +1,7 @@
+tunnel: 4bc66d69-b9a7-4b32-90da-4d8ea868c542
+credentials-file: C:\Users\Caixa\.cloudflared\4bc66d69-b9a7-4b32-90da-4d8ea868c542.json
+
+ingress:
+  - hostname: ascani-erva-doce.com.br
+    service: http://localhost:3001
+  - service: http_status:404
