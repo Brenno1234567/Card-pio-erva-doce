@@ -8,6 +8,7 @@ import {
   parseConfigPeso,
   parseAdicionais,
   calcularPrecoPorPeso,
+  produtoEhBoloPersonalizado,
   type TipoVariacao,
 } from "../contexts/cartStore";
 
@@ -62,6 +63,7 @@ export default function ModalProduto({ produto, onClose }: ModalProdutoProps) {
     ehOpcaoMassa ||
     Boolean(produto.categoria?.toLowerCase().includes("bolo")) ||
     produto.nome.toLowerCase().includes("bolo");
+  const ehBoloPersonalizado = produtoEhBoloPersonalizado(produto);
 
   const [opcaoSelecionada, setOpcaoSelecionada] = useState<string | null>(null);
   const [adicionaisSelecionados, setAdicionaisSelecionados] = useState<string[]>([]);
@@ -111,11 +113,12 @@ export default function ModalProduto({ produto, onClose }: ModalProdutoProps) {
 
   // Total dos adicionais selecionados
   const precoAdicionaisTotal = useMemo(() => {
+    if (ehBoloPersonalizado) return 0;
     return adicionaisSelecionados.reduce((total, nomeAdic) => {
       const adic = listaAdicionais.find((a) => a.nome === nomeAdic);
       return total + (adic ? adic.preco : 0);
     }, 0);
-  }, [adicionaisSelecionados, listaAdicionais]);
+  }, [adicionaisSelecionados, ehBoloPersonalizado, listaAdicionais]);
 
   const toggleAdicional = (nome: string) => {
     setErroRecheio(false);
@@ -147,7 +150,7 @@ export default function ModalProduto({ produto, onClose }: ModalProdutoProps) {
     : opcaoSelecionada;
 
   function handleAdicionar() {
-    if (temVariacaoTamanho && !opcaoSelecionada) {
+    if (temVariacaoTamanho && !ehBoloPersonalizado && !opcaoSelecionada) {
       setErroVariacao(true);
       return;
     }
@@ -170,9 +173,10 @@ export default function ModalProduto({ produto, onClose }: ModalProdutoProps) {
         nome: produto.nome,
         preco: precoUnitarioFinal,
         variacao: descricaoVariacao,
-        tipoVariacao: produto.tipoVariacao ?? null,
+        tipoVariacao: ehBoloPersonalizado ? null : produto.tipoVariacao ?? null,
         unidadePeso: temVariacaoPeso ? unidadePeso : null,
         adicionais: adicionaisSelecionados.length > 0 ? [...adicionaisSelecionados] : null,
+        ehBoloPersonalizado,
       });
     }
 
@@ -221,7 +225,11 @@ export default function ModalProduto({ produto, onClose }: ModalProdutoProps) {
             <h2 className="text-xl font-extrabold text-verde-escuro leading-tight pr-8">
               {produto.nome}
             </h2>
-            {temVariacaoTamanho ? (
+            {ehBoloPersonalizado ? (
+              <p className="text-sm font-bold text-verde-normal mt-2">
+                Valor e detalhes definidos pelo WhatsApp
+              </p>
+            ) : temVariacaoTamanho ? (
               <p className="text-sm text-cinza-texto mt-1">
                 a partir de{" "}
                 <span className="font-extrabold text-verde-normal text-lg">
@@ -252,13 +260,15 @@ export default function ModalProduto({ produto, onClose }: ModalProdutoProps) {
                 Descrição
               </h3>
               <p className="text-sm text-verde-escuro/80 leading-relaxed">
-                {produto.descricao}
+                {ehBoloPersonalizado && /massa/i.test(produto.descricao)
+                  ? "Escolha até 2 recheios para o seu bolo. Valor combinado pelo WhatsApp."
+                  : produto.descricao}
               </p>
             </div>
           )}
 
           {/* Seletor de tamanho ou massa */}
-          {temVariacaoTamanho && (
+          {temVariacaoTamanho && !ehBoloPersonalizado && (
             <div>
               <h3 className="text-xs font-bold text-cinza-texto uppercase tracking-wider mb-2">
                 {ehOpcaoMassa ? "1. Escolha a massa" : "Escolha o tamanho"}
@@ -378,7 +388,7 @@ export default function ModalProduto({ produto, onClose }: ModalProdutoProps) {
           )}
 
           {/* Prompt de escolha de massa antes de liberar os recheios */}
-          {ehOpcaoMassa && !opcaoSelecionada && listaAdicionais.length > 0 && (
+          {ehOpcaoMassa && !ehBoloPersonalizado && !opcaoSelecionada && listaAdicionais.length > 0 && (
             <div className="bg-amber-50/90 border border-amber-200 rounded-2xl p-4 text-center space-y-1">
               <p className="text-xs font-black text-amber-900 uppercase tracking-wider">
                 2. Recheios do Bolo
@@ -390,12 +400,12 @@ export default function ModalProduto({ produto, onClose }: ModalProdutoProps) {
           )}
 
           {/* Seletor de Recheios / Adicionais */}
-          {listaAdicionais.length > 0 && (!ehOpcaoMassa || Boolean(opcaoSelecionada)) && (
+          {listaAdicionais.length > 0 && (!ehOpcaoMassa || ehBoloPersonalizado || Boolean(opcaoSelecionada)) && (
             <div className="space-y-2.5">
               <div className="flex items-center justify-between gap-2">
                 <div>
                   <h3 className="text-xs font-bold text-cinza-texto uppercase tracking-wider">
-                    {ehBolo ? "2. Escolha os recheios (até 2 opções)" : "Adicionais (opcional)"}
+                    {ehBolo ? "Escolha os recheios (até 2 opções)" : "Adicionais (opcional)"}
                   </h3>
                   {erroRecheio && (
                     <span className="text-xs text-red-500 font-bold block mt-0.5">
@@ -405,7 +415,7 @@ export default function ModalProduto({ produto, onClose }: ModalProdutoProps) {
                 </div>
 
                 <div className="flex items-center gap-1.5">
-                  {precoAdicionaisTotal > 0 && (
+                  {!ehBoloPersonalizado && precoAdicionaisTotal > 0 && (
                     <span className="text-xs font-bold text-verde-normal">
                       +{precoFormatado.format(precoAdicionaisTotal)}
                     </span>
@@ -473,7 +483,7 @@ export default function ModalProduto({ produto, onClose }: ModalProdutoProps) {
                           </span>
                           <span className="truncate">{adic.nome}</span>
                         </div>
-                        {adic.preco > 0 ? (
+                        {ehBoloPersonalizado ? null : adic.preco > 0 ? (
                           <span className="text-verde-normal font-bold shrink-0">
                             +{precoFormatado.format(adic.preco)}
                           </span>
@@ -521,13 +531,15 @@ export default function ModalProduto({ produto, onClose }: ModalProdutoProps) {
           {/* Resumo e botão principal */}
           <div className="border-t border-cinza-borda/50 pt-4 space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-cinza-texto font-medium">Total</span>
-              <span className="text-xl font-extrabold text-verde-escuro">
-                {precoFormatado.format(precoTotal)}
+              <span className="text-sm text-cinza-texto font-medium">
+                {ehBoloPersonalizado ? "Preço" : "Total"}
+              </span>
+              <span className="text-sm font-extrabold text-verde-escuro">
+                {ehBoloPersonalizado ? "A combinar no WhatsApp" : precoFormatado.format(precoTotal)}
               </span>
             </div>
 
-            {(opcaoSelecionada || descricaoVariacao) && (
+            {!ehBoloPersonalizado && (opcaoSelecionada || descricaoVariacao) && (
               <p className="text-xs text-cinza-texto">
                 {labelVariacao}:{" "}
                 <span className="font-bold text-verde-escuro">
@@ -549,7 +561,7 @@ export default function ModalProduto({ produto, onClose }: ModalProdutoProps) {
                     key={adic}
                     className="inline-block bg-verde-claro/40 text-verde-escuro font-bold px-2 py-0.5 rounded-md border border-verde-normal/20"
                   >
-                    +{adic}
+                    {ehBoloPersonalizado ? adic : `+${adic}`}
                   </span>
                 ))}
               </div>

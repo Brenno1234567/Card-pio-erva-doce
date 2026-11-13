@@ -125,6 +125,20 @@ export function serializarAdicionais(adicionais: Adicional[]): string | null {
   return validos.length > 0 ? JSON.stringify(validos) : null;
 }
 
+export function produtoEhBoloPersonalizado(produto: {
+  nome?: string | null;
+  categoria?: string | null;
+  tipoVariacao?: string | null;
+  opcoesVariacao?: string | null;
+  adicionais?: string | null;
+}): boolean {
+  const identidade = `${produto.nome ?? ""} ${produto.categoria ?? ""}`.toLowerCase();
+  return (
+    identidade.includes("bolo") &&
+    parseAdicionais(produto.adicionais).length > 0
+  );
+}
+
 export interface ItemCarrinho {
   id: string;
   nome: string;
@@ -136,6 +150,16 @@ export interface ItemCarrinho {
   unidadePeso?: "g" | "kg" | null;
   /** Nomes dos adicionais escolhidos */
   adicionais?: string[] | null;
+  /** Bolo com preço definido diretamente pelo atendente no WhatsApp */
+  ehBoloPersonalizado?: boolean;
+}
+
+export function itemEhBoloPersonalizado(item: Pick<ItemCarrinho, "nome" | "ehBoloPersonalizado">): boolean {
+  return item.ehBoloPersonalizado ?? item.nome.toLowerCase().includes("bolo recheado");
+}
+
+export function precoItemCarrinho(item: ItemCarrinho): number {
+  return itemEhBoloPersonalizado(item) ? 0 : item.preco;
 }
 
 /** Gera uma chave única que combina produto + variação + unidade de peso + adicionais */
@@ -160,6 +184,7 @@ interface CartState {
     tipoVariacao?: TipoVariacao;
     unidadePeso?: "g" | "kg" | null;
     adicionais?: string[] | null;
+    ehBoloPersonalizado?: boolean;
   }) => void;
   removerItem: (id: string, variacao?: string | null, unidadePeso?: "g" | "kg" | null, adicionais?: string[] | null) => void;
   alterarQuantidade: (id: string, quantidade: number, variacao?: string | null, unidadePeso?: "g" | "kg" | null, adicionais?: string[] | null) => void;
@@ -200,6 +225,7 @@ export const useCartStore = create<CartState>()(
                 tipoVariacao: produto.tipoVariacao ?? null,
                 unidadePeso: produto.unidadePeso ?? null,
                 adicionais: produto.adicionais ?? null,
+                ehBoloPersonalizado: produto.ehBoloPersonalizado ?? false,
               },
             ],
           };

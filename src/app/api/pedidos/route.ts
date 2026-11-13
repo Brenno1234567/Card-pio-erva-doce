@@ -4,7 +4,7 @@ import { pedidos, itensPedido, produtos, configuracoes } from "../../../db/schem
 import { eq, inArray } from "drizzle-orm";
 import { requireKitchen, requireAuth, isNextResponse } from "../../../lib/auth";
 import { pusherServer } from "../../../lib/pusher-server";
-import { calcularPrecoPorPeso } from "../../../contexts/cartStore";
+import { calcularPrecoPorPeso, produtoEhBoloPersonalizado } from "../../../contexts/cartStore";
 
 interface ItemPedidoInput {
   id?: string;
@@ -143,6 +143,11 @@ export async function POST(request: Request) {
           );
         }
 
+        // O preço do bolo personalizado é combinado diretamente no WhatsApp.
+        if (produtoEhBoloPersonalizado(produto)) {
+          continue;
+        }
+
         const precoBase = ehEncomendaOuDelivery && produto.precoDelivery
           ? produto.precoDelivery
           : produto.preco;
@@ -175,7 +180,15 @@ export async function POST(request: Request) {
     const taxaEntregaNum = ehEncomendaOuDelivery && tipoPedido === "entrega" ? Number(taxaEntrega || 0) : 0;
     totalCalculado += taxaEntregaNum;
 
-    if (totalCalculado <= 0) {
+    const somenteBolosComPrecoNoWhatsApp =
+      ehEncomendaOuDelivery &&
+      (itens as ItemPedidoInput[]).length > 0 &&
+      (itens as ItemPedidoInput[]).every((item) => {
+        const produto = item.id ? produtoMap.get(item.id) : undefined;
+        return Boolean(produto && produtoEhBoloPersonalizado(produto));
+      });
+
+    if (totalCalculado <= 0 && !somenteBolosComPrecoNoWhatsApp) {
       return NextResponse.json({ error: "O valor total do pedido deve ser maior que zero." }, { status: 400 });
     }
 

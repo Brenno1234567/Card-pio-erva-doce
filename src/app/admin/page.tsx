@@ -28,6 +28,7 @@ import {
   serializarConfigPeso,
   parseAdicionais,
   serializarAdicionais,
+  produtoEhBoloPersonalizado,
   type OpcaoVariacao,
   type ConfigPeso,
   type Adicional,
@@ -78,6 +79,8 @@ export default function PainelAdmin() {
   const [cadAdicionais, setCadAdicionais] = useState<Adicional[]>([]);
   const [cadSalvando, setCadSalvando] = useState(false);
   const [cadFazendoUpload, setCadFazendoUpload] = useState(false);
+  const [cadErroUpload, setCadErroUpload] = useState("");
+  const [cadastroExpandido, setCadastroExpandido] = useState(false);
 
   // ─── ESTADOS DA TELA/MODAL DE EDIÇÃO DO PRODUTO (AO CLICAR NO LÁPIS) ───
   const [produtoEditando, setProdutoEditando] = useState<Produto | null>(null);
@@ -95,8 +98,10 @@ export default function PainelAdmin() {
   const [editConfigPeso, setEditConfigPeso] = useState<ConfigPeso>({ unidadePadrao: "g", quantidadeMinima: 1 });
   const [editAdicionais, setEditAdicionais] = useState<Adicional[]>([]);
   const [editStatus, setEditStatus] = useState<"Ativo" | "Inativo">("Ativo");
+  const [editEhBoloPersonalizado, setEditEhBoloPersonalizado] = useState(false);
   const [editSalvando, setEditSalvando] = useState(false);
   const [editFazendoUpload, setEditFazendoUpload] = useState(false);
+  const [editErroUpload, setEditErroUpload] = useState("");
   const [filtroAdicionaisEdit, setFiltroAdicionaisEdit] = useState("");
 
   // ─── SCROLL E ARRASTAR DE CATEGORIAS NO DESKTOP ───
@@ -185,17 +190,18 @@ export default function PainelAdmin() {
   const handleUploadCad = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setCadErroUpload("");
     setCadFazendoUpload(true);
     const formData = new FormData();
     formData.append("file", file);
     try {
       const res = await fetch("/api/upload", { method: "POST", body: formData });
-      const data = await res.json();
-      if (data.success) setCadImagem(data.url);
-      else alert("Erro ao fazer upload da imagem.");
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success && data.url) setCadImagem(data.url);
+      else setCadErroUpload(data.error || `O servidor recusou a imagem (HTTP ${res.status}).`);
     } catch (error) {
       console.error("Erro no upload:", error);
-      alert("Erro de conexão ao enviar imagem.");
+      setCadErroUpload("Não foi possível conectar ao servidor para enviar a foto. Confira a conexão e tente novamente.");
     } finally {
       setCadFazendoUpload(false);
     }
@@ -205,17 +211,18 @@ export default function PainelAdmin() {
   const handleUploadEdit = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setEditErroUpload("");
     setEditFazendoUpload(true);
     const formData = new FormData();
     formData.append("file", file);
     try {
       const res = await fetch("/api/upload", { method: "POST", body: formData });
-      const data = await res.json();
-      if (data.success) setEditImagem(data.url);
-      else alert("Erro ao fazer upload da imagem.");
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success && data.url) setEditImagem(data.url);
+      else setEditErroUpload(data.error || `O servidor recusou a imagem (HTTP ${res.status}).`);
     } catch (error) {
       console.error("Erro no upload:", error);
-      alert("Erro de conexão ao enviar imagem.");
+      setEditErroUpload("Não foi possível conectar ao servidor para enviar a foto. Confira a conexão e tente novamente.");
     } finally {
       setEditFazendoUpload(false);
     }
@@ -226,6 +233,7 @@ export default function PainelAdmin() {
     e.preventDefault();
     if (!cadNome.trim() || !cadPreco) return alert("Preencha o nome e o preço do produto!");
     if (cadFazendoUpload) return alert("Aguarde o envio da imagem terminar!");
+    if (cadErroUpload) return alert("A foto não foi enviada. Tente enviar novamente ou corrija o link da imagem antes de cadastrar.");
 
     const categoriaFinal = limparEmoji(
       cadCriandoNovaCat && cadNovaCategoria.trim() ? cadNovaCategoria.trim() : cadCategoria
@@ -251,7 +259,7 @@ export default function PainelAdmin() {
           precoDelivery: cadPrecoDelivery ? Number(cadPrecoDelivery) : null,
           categoria: categoriaFinal,
           canalVisibilidade: cadCanal,
-          imagem: cadImagem.trim() || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
+          imagem: cadImagem.trim() || null,
           tipoVariacao: cadTipoVariacao || null,
           opcoesVariacao: opcoesPayload,
           adicionais: serializarAdicionais(cadAdicionais),
@@ -269,6 +277,7 @@ export default function PainelAdmin() {
         setCadNovaCategoria("");
         setCadCriandoNovaCat(false);
         setCadImagem("");
+        setCadErroUpload("");
         setCadTipoVariacao("");
         setCadOpcoesVariacao([]);
         setCadConfigPeso({ unidadePadrao: "g", quantidadeMinima: 1 });
@@ -287,18 +296,21 @@ export default function PainelAdmin() {
 
   // ─── ABRIR TELA DE EDIÇÃO (CLIQUE NO LÁPIS) ───
   const abrirEdicaoProduto = (produto: Produto) => {
+    const ehBoloPersonalizado = produtoEhBoloPersonalizado(produto);
     setProdutoEditando(produto);
+    setEditEhBoloPersonalizado(ehBoloPersonalizado);
     setEditNome(produto.nome);
     setEditDescricao(produto.descricao || "");
-    setEditPreco(produto.preco.toString());
-    setEditPrecoDelivery(produto.precoDelivery !== undefined && produto.precoDelivery !== null ? produto.precoDelivery.toString() : "");
+    setEditPreco(ehBoloPersonalizado ? "0" : produto.preco.toString());
+    setEditPrecoDelivery(!ehBoloPersonalizado && produto.precoDelivery !== undefined && produto.precoDelivery !== null ? produto.precoDelivery.toString() : "");
     setEditCanal(produto.canalVisibilidade || "ambos");
     setEditCategoria(limparEmoji(produto.categoria || "Lanches"));
     setEditNovaCategoria("");
     setEditCriandoNovaCat(false);
     setEditImagem(produto.imagem || "");
-    setEditTipoVariacao((produto.tipoVariacao as "tamanho" | "peso") || "");
-    setEditOpcoesVariacao(parseOpcoesVariacao(produto.opcoesVariacao));
+    setEditErroUpload("");
+    setEditTipoVariacao(ehBoloPersonalizado ? "" : (produto.tipoVariacao as "tamanho" | "peso") || "");
+    setEditOpcoesVariacao(ehBoloPersonalizado ? [] : parseOpcoesVariacao(produto.opcoesVariacao));
     setEditConfigPeso(parseConfigPeso(produto.tipoVariacao === "peso" ? produto.opcoesVariacao : null));
     setEditAdicionais(parseAdicionais(produto.adicionais));
     setFiltroAdicionaisEdit("");
@@ -313,8 +325,9 @@ export default function PainelAdmin() {
   async function salvarEdicaoProduto(e: React.FormEvent) {
     e.preventDefault();
     if (!produtoEditando) return;
-    if (!editNome.trim() || !editPreco) return alert("Preencha o nome e o preço do produto!");
+    if (!editNome.trim() || (!editEhBoloPersonalizado && !editPreco)) return alert("Preencha o nome e o preço do produto!");
     if (editFazendoUpload) return alert("Aguarde o upload da imagem terminar!");
+    if (editErroUpload) return alert("A foto não foi enviada. Tente enviar novamente ou corrija o link da imagem antes de salvar.");
 
     const categoriaFinal = limparEmoji(
       editCriandoNovaCat && editNovaCategoria.trim() ? editNovaCategoria.trim() : editCategoria
@@ -324,9 +337,9 @@ export default function PainelAdmin() {
     setEditSalvando(true);
     try {
       let opcoesPayload: string | null = null;
-      if (editTipoVariacao === "tamanho") {
+      if (!editEhBoloPersonalizado && editTipoVariacao === "tamanho") {
         opcoesPayload = serializarOpcoesVariacao(editOpcoesVariacao);
-      } else if (editTipoVariacao === "peso") {
+      } else if (!editEhBoloPersonalizado && editTipoVariacao === "peso") {
         opcoesPayload = serializarConfigPeso(editConfigPeso);
       }
 
@@ -336,14 +349,14 @@ export default function PainelAdmin() {
         body: JSON.stringify({
           nome: editNome.trim(),
           descricao: editDescricao.trim(),
-          preco: Number(editPreco),
-          precoDelivery: editPrecoDelivery ? Number(editPrecoDelivery) : null,
+          preco: editEhBoloPersonalizado ? 0 : Number(editPreco),
+          precoDelivery: editEhBoloPersonalizado ? null : (editPrecoDelivery ? Number(editPrecoDelivery) : null),
           categoria: categoriaFinal,
           canalVisibilidade: editCanal,
           imagem: editImagem.trim() || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
-          tipoVariacao: editTipoVariacao || null,
+          tipoVariacao: editEhBoloPersonalizado ? null : (editTipoVariacao || null),
           opcoesVariacao: opcoesPayload,
-          adicionais: serializarAdicionais(editAdicionais),
+          adicionais: serializarAdicionais(editEhBoloPersonalizado ? editAdicionais.map((adic) => ({ ...adic, preco: 0 })) : editAdicionais),
           status: editStatus,
         }),
       });
@@ -488,19 +501,24 @@ export default function PainelAdmin() {
         {/* ═══════════════════════════════════════════════════════════════════ */}
         {/* 1. FORMULÁRIO DE CADASTRO (NO TOPO DA PÁGINA)                      */}
         {/* ═══════════════════════════════════════════════════════════════════ */}
-        <section className="bg-white p-5 sm:p-8 rounded-3xl border border-cinza-borda/80 shadow-sm space-y-6">
-          <div className="border-b border-cinza-borda/60 pb-3 flex items-center justify-between">
+        <section className={`bg-white p-5 sm:p-8 rounded-3xl border border-cinza-borda/80 shadow-sm ${cadastroExpandido ? "space-y-6" : ""}`}>
+          <button
+            type="button"
+            onClick={() => setCadastroExpandido((expandido) => !expandido)}
+            aria-expanded={cadastroExpandido}
+            className="w-full border-b border-cinza-borda/60 pb-3 flex items-center justify-between text-left cursor-pointer"
+          >
             <div>
               <h2 className="text-lg sm:text-xl font-black text-verde-escuro flex items-center gap-2">
-                <Plus size={20} className="text-verde-normal" /> Cadastrar Novo Produto
+                <Plus size={20} className={`text-verde-normal transition-transform ${cadastroExpandido ? "rotate-45" : ""}`} /> Cadastrar Novo Produto
               </h2>
               <p className="text-xs text-cinza-texto mt-0.5">
                 Preencha os dados abaixo para disponibilizar um novo item no cardápio.
               </p>
             </div>
-          </div>
+          </button>
 
-          <form onSubmit={cadastrarProduto} className="space-y-5">
+          {cadastroExpandido && <form onSubmit={cadastrarProduto} className="space-y-5">
             {/* Linha 1: Nome e Categoria */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="md:col-span-2">
@@ -667,14 +685,25 @@ export default function PainelAdmin() {
                   </div>
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/*,.jpg,.jpeg,.png,.webp,.gif"
                     onChange={handleUploadCad}
                     disabled={cadFazendoUpload}
                     className="w-full text-xs file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-verde-normal file:text-white hover:file:bg-verde-destaque file:cursor-pointer"
                   />
                 </div>
+                <input
+                  type="url"
+                  value={cadImagem.startsWith("http") ? cadImagem : ""}
+                  onChange={(e) => { setCadImagem(e.target.value); setCadErroUpload(""); }}
+                  placeholder="Link da imagem (opcional)"
+                  className="mt-2 w-full bg-fundo border border-cinza-borda rounded-xl px-3 py-2 text-xs font-medium focus:outline-none"
+                />
+                <p className="mt-1 text-[10px] text-cinza-texto">Envie uma imagem ou informe um link. Formatos aceitos: JPG, PNG, WEBP e GIF (máx. 5 MB).</p>
                 {cadFazendoUpload && (
                   <p className="text-[11px] text-amber-600 font-bold animate-pulse mt-1">Enviando foto...</p>
+                )}
+                {cadErroUpload && (
+                  <p role="alert" className="mt-1 text-xs font-bold text-red-700">{cadErroUpload}</p>
                 )}
               </div>
             </div>
@@ -830,7 +859,7 @@ export default function PainelAdmin() {
                 {cadSalvando ? "Salvando..." : "Cadastrar Produto"}
               </button>
             </div>
-          </form>
+          </form>}
         </section>
 
         {/* ═══════════════════════════════════════════════════════════════════ */}
@@ -875,7 +904,7 @@ export default function PainelAdmin() {
             <button
               type="button"
               onClick={() => rolarCategorias("esq")}
-              className="hidden sm:flex absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white shadow-md border border-cinza-borda items-center justify-center text-verde-escuro hover:bg-verde-claro/40 transition-all cursor-pointer opacity-90 hover:opacity-100"
+              className="hidden sm:flex absolute left-1 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white shadow-md border border-cinza-borda items-center justify-center text-verde-escuro hover:bg-verde-claro/40 transition-all cursor-pointer opacity-90 hover:opacity-100"
               aria-label="Rolar categorias para a esquerda"
             >
               <ChevronLeft size={18} />
@@ -892,7 +921,7 @@ export default function PainelAdmin() {
                   e.currentTarget.scrollLeft += e.deltaY;
                 }
               }}
-              className={`flex gap-2.5 overflow-x-auto no-scrollbar pb-2 select-none px-1 ${
+              className={`flex gap-2.5 overflow-x-auto no-scrollbar pb-2 select-none px-12 ${
                 isDraggingCat ? "cursor-grabbing" : "cursor-grab"
               }`}
             >
@@ -915,7 +944,7 @@ export default function PainelAdmin() {
             <button
               type="button"
               onClick={() => rolarCategorias("dir")}
-              className="hidden sm:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white shadow-md border border-cinza-borda items-center justify-center text-verde-escuro hover:bg-verde-claro/40 transition-all cursor-pointer opacity-90 hover:opacity-100"
+              className="hidden sm:flex absolute right-1 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white shadow-md border border-cinza-borda items-center justify-center text-verde-escuro hover:bg-verde-claro/40 transition-all cursor-pointer opacity-90 hover:opacity-100"
               aria-label="Rolar categorias para a direita"
             >
               <ChevronRight size={18} />
@@ -941,6 +970,7 @@ export default function PainelAdmin() {
                 const opcoes = parseOpcoesVariacao(produto.opcoesVariacao);
                 const temTamanho = produto.tipoVariacao === "tamanho" && opcoes.length > 0;
                 const temPeso = produto.tipoVariacao === "peso";
+                const ehBoloPersonalizado = produtoEhBoloPersonalizado(produto);
                 const precoMin = temTamanho ? Math.min(...opcoes.map((o) => o.preco)) : produto.preco;
                 const isInativo = produto.status === "Inativo";
 
@@ -1019,14 +1049,18 @@ export default function PainelAdmin() {
                           {produto.nome}
                         </h3>
                         <p className="text-xs text-cinza-texto line-clamp-2 mt-0.5">
-                          {produto.descricao || "Sem descrição."}
+                          {ehBoloPersonalizado && /massa/i.test(produto.descricao)
+                            ? "Escolha até 2 recheios para o seu bolo. Valor combinado pelo WhatsApp."
+                            : (produto.descricao || "Sem descrição.")}
                         </p>
                       </div>
 
                       {/* Preço e badges */}
                       <div className="flex items-center justify-between gap-2 mt-2 pt-1 border-t border-cinza-borda/30">
                         <span className="font-black text-verde-normal text-sm sm:text-base">
-                          {temPeso ? (
+                          {ehBoloPersonalizado ? (
+                            "A combinar no WhatsApp"
+                          ) : temPeso ? (
                             `${precoFormatado(produto.preco)}/kg`
                           ) : temTamanho ? (
                             `a partir de ${precoFormatado(precoMin)}`
@@ -1035,7 +1069,7 @@ export default function PainelAdmin() {
                           )}
                         </span>
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          {temTamanho && (
+                          {temTamanho && !ehBoloPersonalizado && (
                             <span className="text-[10px] font-bold text-cinza-texto bg-fundo px-2 py-0.5 rounded-md border border-cinza-borda">
                               {opcoes.length} tamanhos
                             </span>
@@ -1151,7 +1185,11 @@ export default function PainelAdmin() {
                 )}
               </div>
 
-              {/* Formato de Preço */}
+              {editEhBoloPersonalizado ? (
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-900">
+                  Bolo: selecione apenas os recheios. O preço será combinado pelo WhatsApp.
+                </div>
+              ) : (
               <div className="space-y-3 pt-2 border-t border-cinza-borda/60">
                 <label className="block text-xs font-black uppercase tracking-wider text-verde-escuro">
                   Formato de Venda e Preço
@@ -1260,16 +1298,15 @@ export default function PainelAdmin() {
                   </div>
                 )}
               </div>
+              )}
 
               {/* Adicionais / Recheios */}
               <div className="bg-fundo p-4 rounded-2xl border border-cinza-borda space-y-2.5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black uppercase tracking-wider text-verde-escuro block">
-                    Adicionais / Recheios ({editAdicionais.length})
+                    {editEhBoloPersonalizado ? "Recheios do bolo" : "Adicionais / Recheios"} ({editAdicionais.length})
                   </span>
-                  <span className="text-[11px] text-cinza-texto">
-                    R$ 0,00 = Incluso
-                  </span>
+                  {!editEhBoloPersonalizado && <span className="text-[11px] text-cinza-texto">R$ 0,00 = Incluso</span>}
                 </div>
 
                 {editAdicionais.length > 0 && (
@@ -1287,8 +1324,7 @@ export default function PainelAdmin() {
                           placeholder="Nome (ex: Ninho com Nutella)"
                           className="flex-1 bg-white border border-cinza-borda rounded-xl px-3 py-2 text-xs font-bold"
                         />
-                        <span className="text-xs font-bold text-cinza-texto">R$</span>
-                        <input
+                        {!editEhBoloPersonalizado && <><span className="text-xs font-bold text-cinza-texto">R$</span><input
                           type="number"
                           step="0.01"
                           min="0"
@@ -1300,7 +1336,7 @@ export default function PainelAdmin() {
                           }}
                           placeholder="0.00"
                           className="w-24 bg-white border border-cinza-borda rounded-xl px-3 py-2 text-xs font-bold"
-                        />
+                        /></>}
                         <button
                           type="button"
                           onClick={() => setEditAdicionais(editAdicionais.filter((_, i) => i !== index))}
@@ -1347,12 +1383,13 @@ export default function PainelAdmin() {
                     <input
                       type="url"
                       value={editImagem}
-                      onChange={(e) => setEditImagem(e.target.value)}
+                      onChange={(e) => { setEditImagem(e.target.value); setEditErroUpload(""); }}
                       placeholder="Ou cole a URL direta da imagem..."
                       className="w-full bg-fundo border border-cinza-borda rounded-xl px-3 py-1.5 text-xs font-medium focus:outline-none"
                     />
                   </div>
                 </div>
+                {editErroUpload && <p role="alert" className="mt-1 text-xs font-bold text-red-700">{editErroUpload}</p>}
               </div>
 
               {/* Descrição */}

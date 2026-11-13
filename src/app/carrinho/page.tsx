@@ -16,7 +16,7 @@ import {
   Check,
   MessageCircle,
 } from "lucide-react";
-import { useCartStore } from "../../contexts/cartStore";
+import { itemEhBoloPersonalizado, precoItemCarrinho, useCartStore } from "../../contexts/cartStore";
 
 interface Configuracoes {
   nomeRestaurante?: string;
@@ -65,7 +65,8 @@ function ConteudoCarrinho() {
       .catch((err) => console.error("Erro ao carregar configurações:", err));
   }, []);
 
-  const subtotal = itens.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
+  const temBoloPrecoWhatsApp = itens.some(itemEhBoloPersonalizado);
+  const subtotal = itens.reduce((acc, item) => acc + precoItemCarrinho(item) * item.quantidade, 0);
   const taxaEntregaValor = !mesaValida && tipoPedido === "entrega" ? Number(config?.taxaEntrega ?? 0) : 0;
   const total = subtotal + taxaEntregaValor;
 
@@ -109,6 +110,15 @@ function ConteudoCarrinho() {
     linhas.push(`----------------------------------`);
     linhas.push(`*ITENS DO PEDIDO:*`);
     itens.forEach((i) => {
+      if (itemEhBoloPersonalizado(i)) {
+        linhas.push(`• *${i.quantidade}x Bolo:* ${i.nome}`);
+        if (i.adicionais && i.adicionais.length > 0) {
+          linhas.push(`  *Recheios:* ${i.adicionais.join(", ")}`);
+        }
+        linhas.push(`  *Valor:* A combinar pelo WhatsApp`);
+        return;
+      }
+
       let nomeCompleto = i.nome;
       if (i.variacao) nomeCompleto += ` (${i.variacao})`;
       if (i.adicionais && i.adicionais.length > 0) {
@@ -119,11 +129,18 @@ function ConteudoCarrinho() {
     });
 
     linhas.push(`----------------------------------`);
-    if (taxaEntregaValor > 0) {
+    if (temBoloPrecoWhatsApp) {
+      if (subtotal > 0) linhas.push(`*Subtotal dos demais itens:* ${precoFormatado(subtotal)}`);
+      if (taxaEntregaValor > 0) linhas.push(`*Taxa de Entrega:* ${precoFormatado(taxaEntregaValor)}`);
+      linhas.push(`*Valor do(s) bolo(s):* A combinar pelo WhatsApp.`);
+      if (total > 0) linhas.push(`*Total parcial (sem o bolo):* ${precoFormatado(total)}`);
+    } else if (taxaEntregaValor > 0) {
       linhas.push(`*Subtotal:* ${precoFormatado(subtotal)}`);
       linhas.push(`*Taxa de Entrega:* ${precoFormatado(taxaEntregaValor)}`);
+      linhas.push(`*TOTAL:* *${precoFormatado(total)}*`);
+    } else {
+      linhas.push(`*TOTAL:* *${precoFormatado(total)}*`);
     }
-    linhas.push(`*TOTAL:* *${precoFormatado(total)}*`);
 
     const textoPagamento: Record<string, string> = {
       pix: "Pix",
@@ -162,6 +179,16 @@ function ConteudoCarrinho() {
     setEnviando(true);
     try {
       const payloadItens = itens.map((i) => {
+        if (itemEhBoloPersonalizado(i)) {
+          const recheios = i.adicionais?.length ? ` | Recheios: ${i.adicionais.join(", ")}` : "";
+          return {
+            id: i.id,
+            nome: `Bolo: ${i.nome}${recheios}`,
+            quantidade: i.quantidade,
+            preco: 0,
+          };
+        }
+
         let nomeFormatado = i.nome;
         if (i.variacao) nomeFormatado += ` (${i.variacao})`;
         if (i.adicionais && i.adicionais.length > 0) {
@@ -171,7 +198,7 @@ function ConteudoCarrinho() {
           id: i.id,
           nome: nomeFormatado,
           quantidade: i.quantidade,
-          preco: i.preco,
+          preco: precoItemCarrinho(i),
           variacao: i.variacao,
         };
       });
@@ -272,6 +299,7 @@ function ConteudoCarrinho() {
           {/* Lista de Itens */}
           <div className="space-y-3 mb-6">
             {itens.map((item) => {
+              const ehBolo = itemEhBoloPersonalizado(item);
               const itemKey = `${item.id}::${item.variacao || ""}::${item.unidadePeso || ""}::${(item.adicionais || []).join(",")}`;
               return (
                 <div
@@ -280,7 +308,7 @@ function ConteudoCarrinho() {
                 >
                   <div className="min-w-0 flex-1">
                     <h3 className="font-bold text-verde-escuro truncate">{item.nome}</h3>
-                    {item.variacao && (
+                    {item.variacao && !ehBolo && (
                       <span
                         className={`inline-block mt-0.5 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
                           item.tipoVariacao === "peso"
@@ -298,19 +326,23 @@ function ConteudoCarrinho() {
                             key={adic}
                             className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-md bg-verde-claro/40 text-verde-escuro border border-verde-normal/20"
                           >
-                            +{adic}
+                            {ehBolo ? adic : `+${adic}`}
                           </span>
                         ))}
                       </div>
                     )}
                     <p className="text-xs text-cinza-texto mt-1">
-                      {item.tipoVariacao === "peso"
+                      {ehBolo
+                        ? `Qtd: ${item.quantidade}x • Preço a combinar no WhatsApp`
+                        : item.tipoVariacao === "peso"
                         ? `${item.quantidade}x ${item.variacao} • ${precoFormatado(item.preco)} cada`
                         : `Qtd: ${item.quantidade}x • ${precoFormatado(item.preco)}`}
                     </p>
                   </div>
                   <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
-                    <span className="font-bold text-verde-normal">{precoFormatado(item.preco * item.quantidade)}</span>
+                    <span className="font-bold text-verde-normal">
+                      {ehBolo ? "A combinar" : precoFormatado(precoItemCarrinho(item) * item.quantidade)}
+                    </span>
                     {item.tipoVariacao === "peso" ? (
                       <button
                         onClick={() => removerItem(item.id, item.variacao, item.unidadePeso, item.adicionais)}
@@ -616,7 +648,7 @@ function ConteudoCarrinho() {
           <div className="fixed bottom-0 left-0 w-full bg-white border-t border-cinza-borda p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-lg z-20">
             <div className="max-w-2xl mx-auto">
               <div className="flex justify-between items-center mb-1 text-xs text-cinza-texto">
-                <span>Subtotal:</span>
+                <span>{temBoloPrecoWhatsApp ? "Subtotal dos demais itens:" : "Subtotal:"}</span>
                 <span className="font-bold text-verde-escuro">{precoFormatado(subtotal)}</span>
               </div>
               {!mesaValida && tipoPedido === "entrega" && (
@@ -626,9 +658,16 @@ function ConteudoCarrinho() {
                 </div>
               )}
               <div className="flex justify-between items-center mb-3 pt-1 border-t border-cinza-borda/40">
-                <span className="text-cinza-texto text-sm font-bold">Total:</span>
-                <span className="text-xl font-extrabold text-verde-escuro">{precoFormatado(total)}</span>
+                <span className="text-cinza-texto text-sm font-bold">{temBoloPrecoWhatsApp ? "Total parcial:" : "Total:"}</span>
+                <span className="text-xl font-extrabold text-verde-escuro">
+                  {temBoloPrecoWhatsApp && total === 0 ? "A combinar no WhatsApp" : precoFormatado(total)}
+                </span>
               </div>
+              {temBoloPrecoWhatsApp && (
+                <p className="text-[11px] text-cinza-texto text-center mb-3">
+                  O valor do bolo será combinado pelo WhatsApp.
+                </p>
+              )}
               <button
                 onClick={finalizarPedido}
                 disabled={enviando}

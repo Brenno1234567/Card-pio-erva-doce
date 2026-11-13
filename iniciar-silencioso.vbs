@@ -1,13 +1,12 @@
-Dim Wsh
+Dim Wsh, Fso, scriptDir, controller
 Set Wsh = CreateObject("WScript.Shell")
+Set Fso = CreateObject("Scripting.FileSystemObject")
 
-' Inicia o Next.js em segundo plano (windowStyle 0 = oculto)
-Wsh.Run "cmd /c cd /d ""C:\Users\Caixa\Cardapio-digital"" && npm run start", 0, False
+scriptDir = Fso.GetParentFolderName(WScript.ScriptFullName)
+controller = scriptDir & "\controle-cardapio.ps1"
 
-' Aguarda 5 segundos para o servidor subir
-Wsh.Run "cmd /c timeout /t 5 /nobreak >nul", 0, True
+' Abre o PowerShell visível e mantém a janela aberta em caso de erro.
+Wsh.Run "powershell.exe -NoLogo -NoExit -ExecutionPolicy Bypass -File """ & controller & """", 1, False
 
-' Inicia o tunnel Cloudflare em segundo plano
-Wsh.Run "cmd /c cloudflared tunnel --config ""C:\Users\Caixa\Cardapio-digital\config.yml"" run 4bc66d69-b9a7-4b32-90da-4d8ea868c542", 0, False
-
+Set Fso = Nothing
 Set Wsh = Nothing

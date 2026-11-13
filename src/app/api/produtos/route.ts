@@ -3,15 +3,31 @@ import { produtos } from "../../../db/schema";
 import { requireAdmin, isNextResponse, getAuthRole } from "../../../lib/auth";
 import { invalidarCacheProdutos, listarProdutosAtivosEmCache, listarTodosProdutosEmCache } from "../../../lib/produtos-cache";
 
+function comUrlImagemServivel(produto: any) {
+  if (typeof produto.imagem === "string" && /^\/uploads\/[^/]+$/.test(produto.imagem)) {
+    return { ...produto, imagem: produto.imagem.replace(/^\/uploads\//, "/api/uploads/") };
+  }
+  return produto;
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const canal = searchParams.get("canal"); // "presencial" | "publico"
     const role = await getAuthRole();
-    const lista = role === "admin" ? await listarTodosProdutosEmCache() : await listarProdutosAtivosEmCache();
 
-    if (role === "admin" || !canal) {
-      return NextResponse.json(lista);
+    // A tela administrativa consulta sem canal para gerenciar todos os itens.
+    // Quando há um canal, a resposta deve respeitar visibilidade e status mesmo
+    // se a requisição vier de uma sessão de administrador.
+    if (role === "admin" && !canal) {
+      const lista = await listarTodosProdutosEmCache();
+      return NextResponse.json(lista.map(comUrlImagemServivel));
+    }
+
+    const lista = await listarProdutosAtivosEmCache();
+
+    if (!canal) {
+      return NextResponse.json(lista.map(comUrlImagemServivel));
     }
 
     const filtrados = lista.filter((p: any) => {
@@ -20,7 +36,7 @@ export async function GET(request: Request) {
       return visibilidade === canal;
     });
 
-    return NextResponse.json(filtrados);
+    return NextResponse.json(filtrados.map(comUrlImagemServivel));
   } catch (error) {
     console.error("Erro ao buscar produtos:", error);
     return NextResponse.json({ error: "Erro ao buscar produtos" }, { status: 500 });
@@ -45,6 +61,11 @@ export async function POST(request: Request) {
     const precoDelivery = body.precoDelivery !== undefined && body.precoDelivery !== null && body.precoDelivery !== ""
       ? Number(body.precoDelivery)
       : null;
+    const imagem = typeof body.imagem === "string" ? body.imagem.trim() : "";
+    const uploadLocalValido = /^\/api\/uploads\/[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(imagem);
+    if (imagem && !/^https?:\/\//i.test(imagem) && !uploadLocalValido) {
+      return NextResponse.json({ error: "Informe um link HTTP(S) ou uma imagem enviada pelo cardápio." }, { status: 400 });
+    }
 
     const id = crypto.randomUUID();
 
@@ -58,7 +79,7 @@ export async function POST(request: Request) {
       categoria: body.categoria || "Geral",
       canalVisibilidade: body.canalVisibilidade || "ambos",
       status: "Ativo",
-      imagem: body.imagem?.trim() || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
+      imagem: imagem || null,
       tipoVariacao: body.tipoVariacao || null,
       opcoesVariacao: body.tipoVariacao ? String(body.opcoesVariacao ?? "").trim() || null : null,
       adicionais: body.adicionais ? String(body.adicionais).trim() || null : null,

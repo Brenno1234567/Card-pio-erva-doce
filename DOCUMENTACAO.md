@@ -197,7 +197,7 @@ Remove colaborador.
 
 ### `POST /api/upload`
 
-Recebe um arquivo (`FormData`) e envia para o Cloudinary (pasta `cardapio`), retornando a URL segura. Sem autenticação e sem validação de tipo/tamanho de arquivo.
+Recebe um arquivo (`FormData`) pela API do cardápio, valida JPG, PNG, WEBP ou GIF (máximo 5 MB) e exige autenticação de administrador. Se a configuração FTP estiver completa, envia para `FTP_REMOTE_DIR` e retorna a URL pública. Sem FTP configurado, grava em `public/uploads` no servidor e serve o arquivo pela rota dinâmica `/api/uploads/[filename]`. Assim, dispositivos remotos enviam a imagem ao PC servidor por HTTP através do Cloudflare Tunnel; esse PC precisa permanecer ligado. No cadastro, o envio do arquivo é opcional e também é possível informar um link HTTP(S).
 
 ---
 
@@ -295,9 +295,14 @@ PUSHER_APP_ID
 NEXT_PUBLIC_PUSHER_KEY
 PUSHER_SECRET
 NEXT_PUBLIC_PUSHER_CLUSTER
-CLOUDINARY_CLOUD_NAME
-CLOUDINARY_API_KEY
-CLOUDINARY_API_SECRET
+FTP_HOST (opcional; sem ele, usa armazenamento local no servidor)
+FTP_PORT (opcional, padrão 21)
+FTP_USER
+FTP_PASSWORD
+FTP_REMOTE_DIR (opcional, padrão /uploads)
+FTP_PUBLIC_URL
+FTP_PUBLIC_PATH (opcional, padrão /uploads)
+FTP_SECURE (opcional, true para FTPS)
 NEXT_PUBLIC_FIREBASE_API_KEY
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
 NEXT_PUBLIC_FIREBASE_PROJECT_ID

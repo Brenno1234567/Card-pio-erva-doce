@@ -1,0 +1,45 @@
+2026-11-13T13:58:46Z INF Starting tunnel tunnelID=4bc66d69-b9a7-4b32-90da-4d8ea868c542
+2026-11-13T13:58:46Z INF Version 2026.9.3 (Checksum f096265ec2fcbe9bb6e2d64268db167ced3fcbb83d894bdb9e2fcdb26f2ea7e2)
+2026-11-13T13:58:46Z INF GOOS: windows, GOVersion: go1.26.8, GoArch: amd64
+2026-11-13T13:58:46Z INF Settings: map[config:C:\Users\Caixa\Cardapio-digital\config.yml cred-file:C:\Users\Caixa\.cloudflared\4bc66d69-b9a7-4b32-90da-4d8ea868c542.json credentials-file:C:\Users\Caixa\.cloudflared\4bc66d69-b9a7-4b32-90da-4d8ea868c542.json]
+2026-11-13T13:58:46Z INF cloudflared will not automatically update on Windows systems.
+2026-11-13T13:58:46Z INF Generated Connector ID: 9ef640c6-b5a1-4c67-b4b5-ad526b286613
+2026-11-13T13:58:46Z INF Initial protocol quic
+2026-11-13T13:58:46Z INF ICMP proxy will use 192.168.15.26 as source for IPv4
+2026-11-13T13:58:46Z INF ICMP proxy will use 2804:1b3:664b:8b63:30c2:b566:df31:cec5 in zone Ethernet 2 as source for IPv6
+2026-11-13T13:58:46Z INF cloudflared does not support loading the system root certificate pool on Windows. Please use --origin-ca-pool <PATH> to specify the path to the certificate pool
+2026-11-13T13:58:46Z INF ICMP proxy will use 192.168.15.26 as source for IPv4
+2026-11-13T13:58:46Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveID(65074) CurveP256] connIndex=0 event=0 ip=2606:4700:a8::7
+2026-11-13T13:58:46Z INF ICMP proxy will use 2804:1b3:664b:8b63:30c2:b566:df31:cec5 in zone Ethernet 2 as source for IPv6
+2026-11-13T13:58:46Z INF Starting metrics server on 127.0.0.1:20243/metrics
+2026-11-13T13:58:47Z INF +-------------------------------------------------------------------------------------+
+2026-11-13T13:58:47Z INF |                               CONNECTIVITY PRE-CHECKS                               |
+2026-11-13T13:58:47Z INF +-------------------------------------------------------------------------------------+
+2026-11-13T13:58:47Z INF |  COMPONENT         TARGET                     STATUS  DETAILS                       |
+2026-11-13T13:58:47Z INF |  DNS Resolution    region1.v2.argotunnel.com  PASS    DNS Resolved successfully     |
+2026-11-13T13:58:47Z INF |  DNS Resolution    region2.v2.argotunnel.com  PASS    DNS Resolved successfully     |
+2026-11-13T13:58:47Z INF |  UDP Connectivity  region1.v2.argotunnel.com  PASS    QUIC connection successful    |
+2026-11-13T13:58:47Z INF |  UDP Connectivity  region2.v2.argotunnel.com  PASS    QUIC connection successful    |
+2026-11-13T13:58:47Z INF |  TCP Connectivity  region1.v2.argotunnel.com  PASS    HTTP/2 connection successful  |
+2026-11-13T13:58:47Z INF |  TCP Connectivity  region2.v2.argotunnel.com  PASS    HTTP/2 connection successful  |
+2026-11-13T13:58:47Z INF |  Cloudflare API    api.cloudflare.com:443     PASS    API is reachable              |
+2026-11-13T13:58:47Z INF |                                                                                     |
+2026-11-13T13:58:47Z INF |  SUMMARY: Environment is healthy. cloudflared will use 'quic' as primary protocol.  |
+2026-11-13T13:58:47Z INF +-------------------------------------------------------------------------------------+
+2026-11-13T13:58:47Z INF precheck component="DNS Resolution" details="DNS Resolved successfully" run_id=6e0bab63-dafb-4aeb-b741-c6137d28dbb3 status=pass target=region1.v2.argotunnel.com
+2026-11-13T13:58:47Z INF precheck component="DNS Resolution" details="DNS Resolved successfully" run_id=6e0bab63-dafb-4aeb-b741-c6137d28dbb3 status=pass target=region2.v2.argotunnel.com
+2026-11-13T13:58:47Z INF precheck component="UDP Connectivity" details="QUIC connection successful" run_id=6e0bab63-dafb-4aeb-b741-c6137d28dbb3 status=pass target=region1.v2.argotunnel.com
+2026-11-13T13:58:47Z INF precheck component="UDP Connectivity" details="QUIC connection successful" run_id=6e0bab63-dafb-4aeb-b741-c6137d28dbb3 status=pass target=region2.v2.argotunnel.com
+2026-11-13T13:58:47Z INF precheck component="TCP Connectivity" details="HTTP/2 connection successful" run_id=6e0bab63-dafb-4aeb-b741-c6137d28dbb3 status=pass target=region1.v2.argotunnel.com
+2026-11-13T13:58:47Z INF precheck component="TCP Connectivity" details="HTTP/2 connection successful" run_id=6e0bab63-dafb-4aeb-b741-c6137d28dbb3 status=pass target=region2.v2.argotunnel.com
+2026-11-13T13:58:47Z INF precheck component="Cloudflare API" details="API is reachable" run_id=6e0bab63-dafb-4aeb-b741-c6137d28dbb3 status=pass target=api.cloudflare.com:443
+2026-11-13T13:58:47Z INF precheck complete hard_fail=false run_id=6e0bab63-dafb-4aeb-b741-c6137d28dbb3 suggested_protocol=quic
+2026-11-13T13:58:47Z INF Registered tunnel connection connIndex=0 connection=ae7b0161-d3e3-4d35-bac6-12ba7c3e3bc1 event=0 ip=2606:4700:a8::7 location=gru17 protocol=quic
+2026-11-13T13:58:47Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveID(65074) CurveP256] connIndex=1 event=0 ip=2606:4700:a0::6
+2026-11-13T13:58:47Z INF cloudflared does not support loading the system root certificate pool on Windows. Please use --origin-ca-pool <PATH> to specify the path to the certificate pool
+2026-11-13T13:58:47Z INF Updated to new configuration config="{\"ingress\":[{\"hostname\":\"ascani-erva-doce.com.br\",\"service\":\"http://localhost:3001\"},{\"service\":\"http_status:404\"}],\"warp-routing\":{\"enabled\":false}}" version=1
+2026-11-13T13:58:47Z INF Registered tunnel connection connIndex=1 connection=9c3c1dbe-07bb-44c9-8049-7cb81ef002b4 event=0 ip=2606:4700:a0::6 location=gru14 protocol=quic
+2026-11-13T13:58:48Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveID(65074) CurveP256] connIndex=2 event=0 ip=2606:4700:a0::1
+2026-11-13T13:58:48Z INF Registered tunnel connection connIndex=2 connection=4c6c771c-c81d-4ed7-855e-c8fa4dc83873 event=0 ip=2606:4700:a0::1 location=gru14 protocol=quic
+2026-11-13T13:58:49Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveID(65074) CurveP256] connIndex=3 event=0 ip=2606:4700:a8::9
+2026-11-13T13:58:50Z INF Registered tunnel connection connIndex=3 connection=9e4efe52-e97a-4a91-b5d3-4365a6ccde75 event=0 ip=2606:4700:a8::9 location=gru02 protocol=quic

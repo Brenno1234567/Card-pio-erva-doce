@@ -1,4 +1,4 @@
-import { parseOpcoesVariacao, parseAdicionais, type TipoVariacao } from "../contexts/cartStore";
+import { parseOpcoesVariacao, parseAdicionais, produtoEhBoloPersonalizado, type TipoVariacao } from "../contexts/cartStore";
 
 export interface CardProdutoProps {
   id: string;
@@ -34,6 +34,7 @@ export default function CardProduto({
   const temVariacaoTamanho = tipoVariacao === "tamanho" && opcoes.length > 0;
   const temVariacaoPeso = tipoVariacao === "peso";
   const temAdicionais = listaAdicionais.length > 0;
+  const ehBoloPersonalizado = produtoEhBoloPersonalizado({ nome, tipoVariacao, opcoesVariacao, adicionais });
   const precoMinimo = temVariacaoTamanho ? Math.min(...opcoes.map((o) => o.preco)) : preco;
 
   return (
@@ -57,10 +58,18 @@ export default function CardProduto({
         <h3 className="font-bold text-verde-escuro leading-tight truncate group-hover:text-verde-normal transition-colors">
           {nome}
         </h3>
-        <p className="text-sm text-cinza-texto line-clamp-2">{descricao}</p>
+        <p className="text-sm text-cinza-texto line-clamp-2">
+          {ehBoloPersonalizado && /massa/i.test(descricao)
+            ? "Escolha até 2 recheios para o seu bolo. Valor combinado pelo WhatsApp."
+            : descricao}
+        </p>
 
         <div className="flex items-center gap-2 mt-auto pt-1 flex-wrap">
-          {temVariacaoPeso ? (
+          {ehBoloPersonalizado ? (
+            <span className="font-bold text-verde-normal text-sm sm:text-base shrink-0">
+              Valor definido no WhatsApp
+            </span>
+          ) : temVariacaoPeso ? (
             <span className="font-bold text-verde-normal text-sm sm:text-base shrink-0">
               {precoFormatado.format(preco)}/kg
             </span>
@@ -75,7 +84,7 @@ export default function CardProduto({
           )}
 
           {/* Badge de variação disponível */}
-          {temVariacaoTamanho && (
+          {temVariacaoTamanho && !ehBoloPersonalizado && (
             <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-verde-claro/50 text-verde-escuro border border-verde-normal/20">
               {opcoes.some((o) => o.opcao.toLowerCase().includes("massa")) ? "Massas" : "Tamanhos"}
               <span className="text-cinza-texto normal-case tracking-normal">
